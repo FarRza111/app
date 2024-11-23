@@ -1,0 +1,75 @@
+<!-- FAQ Section -->
+<section class="py-16 bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-white mb-4">Tez-tez verilən suallar</h2>
+            <p class="text-gray-400">Kurslarımız haqqında ətraflı məlumat</p>
+        </div>
+        <div class="space-y-4">
+            <div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors duration-200">
+                <button onclick="toggleFaq(1)" class="w-full flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-white text-left">Kurslara necə qoşula bilərəm?</h3>
+                    <span class="transform transition-transform duration-200" id="icon-1">▼</span>
+                </button>
+                <div id="answer-1" class="mt-4 text-gray-400 hidden">
+                    Kursa qoşulmaq üçün kursun səhifəsindəki qeydiyyat formasını doldurun. Qeydiyyatdan sonra sizinlə əlaqə saxlanılacaq.
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors duration-200">
+                <button onclick="toggleFaq(2)" class="w-full flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-white text-left">Kurslar nə qədər davam edir?</h3>
+                    <span class="transform transition-transform duration-200" id="icon-2">▼</span>
+                </button>
+                <div id="answer-2" class="mt-4 text-gray-400 hidden">
+                    Kursların müddəti mövzudan asılı olaraq 12-16 həftə arasında dəyişir. Hər həftə 2-3 dəfə olmaqla 1.5-2 saat dərs keçirilir.
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors duration-200">
+                <button onclick="toggleFaq(3)" class="w-full flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-white text-left">Dərslər onlayn yoxsa əyani keçirilir?</h3>
+                    <span class="transform transition-transform duration-200" id="icon-3">▼</span>
+                </button>
+                <div id="answer-3" class="mt-4 text-gray-400 hidden">
+                    Dərslər həm onlayn, həm də əyani formatda keçirilir. Siz öz seçiminizə uyğun olaraq istədiyiniz formatı seçə bilərsiniz.
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors duration-200">
+                <button onclick="toggleFaq(4)" class="w-full flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-white text-left">Kursu bitirdikdən sonra sertifikat verilir?</h3>
+                    <span class="transform transition-transform duration-200" id="icon-4">▼</span>
+                </button>
+                <div id="answer-4" class="mt-4 text-gray-400 hidden">
+                    Bəli, kursu uğurla başa vuran tələbələrə rəsmi sertifikat təqdim olunur. Bu sertifikat sizin bilik və bacarıqlarınızı təsdiqləyir.
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors duration-200">
+                <button onclick="toggleFaq(5)" class="w-full flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-white text-left">Ödənişi necə edə bilərəm?</h3>
+                    <span class="transform transition-transform duration-200" id="icon-5">▼</span>
+                </button>
+                <div id="answer-5" class="mt-4 text-gray-400 hidden">
+                    Kurs ödənişini nağd, bank kartı və ya köçürmə yolu ilə edə bilərsiniz. Həmçinin taksit imkanımız da mövcuddur.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function toggleFaq(id) {
+    const answer = document.getElementById(`answer-${id}`);
+    const icon = document.getElementById(`icon-${id}`);
+    
+    answer.classList.toggle('hidden');
+    
+    if (answer.classList.contains('hidden')) {
+        icon.style.transform = 'rotate(0deg)';
+    } else {
+        icon.style.transform = 'rotate(180deg)';
+    }
+}
+</script>
