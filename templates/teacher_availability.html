@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Our Teachers</h2>
+    
+    <!-- Day Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="form-group">
+                <label for="dayFilter">Filter Availability by Day:</label>
+                <select class="form-control" id="dayFilter" onchange="loadTeachers()">
+                    <option value="">All Days</option>
+                    <option value="0">Monday</option>
+                    <option value="1">Tuesday</option>
+                    <option value="2">Wednesday</option>
+                    <option value="3">Thursday</option>
+                    <option value="4">Friday</option>
+                    <option value="5">Saturday</option>
+                    <option value="6">Sunday</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teachers List -->
+    <div id="teachersList" class="row">
+        <!-- Will be populated by JavaScript -->
+    </div>
+</div>
+
+<script>
+const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+function formatTime(time) {
+    const [hours, minutes] = time.split(':');
+    return `${hours.padStart(2, '0')}:${minutes}`;
+}
+
+function getDefaultProfileImage() {
+    return 'https://via.placeholder.com/150';
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    });
+}
+
+function renderStars(rating) {
+    return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+}
+
+async function loadTeacherContent(teacherId) {
+    try {
+        const [testimonials, blogPosts] = await Promise.all([
+            fetch(`/api/teachers/${teacherId}/testimonials`).then(res => res.json()),
+            fetch(`/api/teachers/${teacherId}/blog`).then(res => res.json())
+        ]);
+        return { testimonials, blogPosts };
+    } catch (error) {
+        console.error('Error loading teacher content:', error);
+        return { testimonials: [], blogPosts: [] };
+    }
+}
+
+async function loadTeachers() {
+    const dayFilter = document.getElementById('dayFilter').value;
+    const url = `/api/calendar/teachers${dayFilter ? `?day_of_week=${dayFilter}` : ''}`;
+    
+    try {
+        const response = await fetch(url);
+        if (response.ok) {
+            const teachers = await response.json();
+            const teachersList = document.getElementById('teachersList');
+            teachersList.innerHTML = '';
+            
+            if (teachers.length === 0) {
+                teachersList.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            No teachers available${dayFilter ? ` on ${days[dayFilter]}` : ''}.
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            for (const data of teachers) {
+                const teacher = data.teacher;
+                const { testimonials, blogPosts } = await loadTeacherContent(teacher.id);
+                
+                const teacherCard = document.createElement('div');
+                teacherCard.className = 'col-md-6 col-lg-4 mb-4';
+                
+                let availabilityHtml = '';
+                const availabilitiesByDay = {};
+                
+                data.availabilities.forEach(slot => {
+                    if (!availabilitiesByDay[slot.day_of_week]) {
+                        availabilitiesByDay[slot.day_of_week] = [];
+                    }
+                    availabilitiesByDay[slot.day_of_week].push(slot);
+                });
+                
+                Object.keys(availabilitiesByDay).sort().forEach(day => {
+                    const slots = availabilitiesByDay[day];
+                    availabilityHtml += `
+                        <div class="mb-3">
+                            <h6 class="text-primary">${days[day]}</h6>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Start</th>
+                                        <th>End</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${slots.map(slot => `
+                                        <tr>
+                                            <td>${formatTime(slot.start_time)}</td>
+                                            <td>${formatTime(slot.end_time)}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                });
+
+                // Generate testimonials HTML
+                const testimonialsHtml = testimonials.length > 0 ? `
+                    <div class="testimonials-section mb-4">
+                        <h6 class="text-primary mb-3">Student Testimonials</h6>
+                        <div class="testimonials-carousel">
+                            ${testimonials.map(t => `
+                                <div class="testimonial-card mb-3">
+                                    <div class="stars text-warning mb-2">${renderStars(t.rating)}</div>
+                                    <p class="testimonial-content">"${t.content}"</p>
+                                    <p class="testimonial-author text-muted">- ${t.author_name}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : '';
+
+                // Generate blog posts HTML
+                const blogPostsHtml = blogPosts.length > 0 ? `
+                    <div class="blog-section mb-4">
+                        <h6 class="text-primary mb-3">Recent Blog Posts</h6>
+                        <div class="blog-posts">
+                            ${blogPosts.slice(0, 2).map(post => `
+                                <div class="blog-card mb-3">
+                                    ${post.image_url ? `
+                                        <img src="${post.image_url}" alt="${post.title}" class="blog-image mb-2">
+                                    ` : ''}
+                                    <h6 class="blog-title">${post.title}</h6>
+                                    <p class="blog-summary">${post.summary}</p>
+                                    <small class="text-muted">Posted on ${formatDate(post.created_at)}</small>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : '';
+                
+                teacherCard.innerHTML = `
+                    <div class="card h-100">
+                        <div class="card-header text-center bg-primary text-white">
+                            <h4 class="mb-0">${teacher.full_name}</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center mb-3">
+                                <img src="${teacher.profile_image || getDefaultProfileImage()}" 
+                                     alt="${teacher.full_name}" 
+                                     class="rounded-circle img-fluid mb-3"
+                                     style="max-width: 150px;">
+                                
+                                ${teacher.specialization ? 
+                                    `<h5 class="text-muted">${teacher.specialization}</h5>` : ''}
+                            </div>
+                            
+                            ${teacher.bio ? 
+                                `<div class="mb-3">
+                                    <h6 class="text-primary">About</h6>
+                                    <p>${teacher.bio}</p>
+                                </div>` : ''}
+                            
+                            <div class="row mb-3">
+                                ${teacher.years_of_experience ? 
+                                    `<div class="col-6">
+                                        <h6 class="text-primary">Experience</h6>
+                                        <p>${teacher.years_of_experience} years</p>
+                                    </div>` : ''}
+                                
+                                ${teacher.education ? 
+                                    `<div class="col-6">
+                                        <h6 class="text-primary">Education</h6>
+                                        <p>${teacher.education}</p>
+                                    </div>` : ''}
+                            </div>
+
+                            ${testimonialsHtml}
+                            ${blogPostsHtml}
+
+                            <div class="availability-section">
+                                <h6 class="text-primary mb-3">Availability Schedule</h6>
+                                ${availabilityHtml || '<p>No availability slots found.</p>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                teachersList.appendChild(teacherCard);
+            }
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// Load teachers when page loads
+document.addEventListener('DOMContentLoaded', loadTeachers);
+</script>
+
+<style>
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.table-sm td, .table-sm th {
+    padding: 0.3rem;
+    font-size: 0.9rem;
+}
+
+.text-primary {
+    color: #007bff !important;
+}
+
+.bg-primary {
+    background-color: #007bff !important;
+}
+
+.testimonial-card {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.testimonial-content {
+    font-style: italic;
+    margin-bottom: 0.5rem;
+}
+
+.testimonial-author {
+    font-weight: bold;
+}
+
+.blog-card {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.blog-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.blog-title {
+    color: #007bff;
+    margin-bottom: 0.5rem;
+}
+
+.blog-summary {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.stars {
+    letter-spacing: 2px;
+    font-size: 1.2rem;
+}
+</style>
+{% endblock %}

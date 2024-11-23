@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Course Header -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
+            <div class="relative">
+                <div class="h-48 w-full object-cover bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+                <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                    <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white text-center px-4">{{ course.title }}</h1>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                    <div class="flex items-center mb-4 md:mb-0">
+                        <div class="bg-blue-100 rounded-full p-3">
+                            <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <h2 class="text-sm font-medium text-gray-500">Duration</h2>
+                            <p class="text-lg font-semibold text-gray-900">{{ course.duration }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="inline-flex items-center px-4 py-2 rounded-full text-xl font-semibold bg-blue-100 text-blue-800">
+                            ${{ course.price }}
+                        </span>
+                    </div>
+                </div>
+                <p class="text-gray-600 text-lg mb-6">{{ course.description }}</p>
+                
+                <!-- Progress Bar (for enrolled users) -->
+                {% if user_progress %}
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-700">Course Progress</span>
+                        <span class="text-sm font-medium text-blue-600">{{ progress_percentage }}%</span>
+                    </div>
+                    <div class="relative pt-1">
+                        <div class="overflow-hidden h-3 rounded-full bg-gray-200">
+                            <div class="h-full rounded-full bg-blue-600 transition-all duration-300"
+                                style="width: {{ progress_percentage }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Course Actions -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    {% if not user_progress %}
+                    <button onclick="enrollCourse()" 
+                            class="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150">
+                        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        Enroll Now
+                    </button>
+                    {% endif %}
+                    
+                    {% if user_progress and progress_percentage == 100 %}
+                    <button onclick="generateCertificate()" 
+                            class="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150">
+                        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Get Certificate
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Course Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Modules -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="p-6">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-6">Course Modules</h2>
+                        <div class="space-y-4">
+                            {% for i, module in enumerate(course.modules) %}
+                            <div class="border rounded-lg hover:shadow-md transition-shadow duration-200 
+                                      {% if user_progress and i in user_progress %} bg-green-50 border-green-200 {% endif %}">
+                                <div class="p-4">
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="text-lg font-semibold text-gray-900">{{ module.title }}</h3>
+                                        {% if user_progress is not none %}
+                                        <button onclick="toggleModuleCompletion({{ i }})"
+                                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+                                                       {% if i in user_progress %}
+                                                       bg-green-100 text-green-800 hover:bg-green-200
+                                                       {% else %}
+                                                       bg-gray-100 text-gray-800 hover:bg-gray-200
+                                                       {% endif %}
+                                                       transition duration-150">
+                                            {% if i in user_progress %}
+                                            <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            Completed
+                                            {% else %}
+                                            Mark as Complete
+                                            {% endif %}
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                    <p class="mt-2 text-gray-600">{{ module.description }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <!-- Learning Outcomes -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+                    <div class="p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4">Learning Outcomes</h2>
+                        <ul class="space-y-3">
+                            {% for outcome in course.outcomes %}
+                            <li class="flex items-start">
+                                <svg class="h-5 w-5 text-green-500 mr-2 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span class="text-gray-600">{{ outcome }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Certificate Preview (if completed) -->
+                {% if user_progress and progress_percentage == 100 and certificate %}
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4">Your Certificate</h2>
+                        <div class="border rounded-lg p-4 bg-gradient-to-r from-blue-50 to-indigo-50">
+                            <div class="text-center mb-4">
+                                <svg class="h-16 w-16 mx-auto text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                </svg>
+                            </div>
+                            <div class="text-center mb-4">
+                                <p class="text-sm text-gray-500">Certificate ID</p>
+                                <p class="font-mono text-sm text-gray-900">{{ certificate.id }}</p>
+                            </div>
+                            <div class="text-center mb-4">
+                                <p class="text-sm text-gray-500">Completion Date</p>
+                                <p class="font-semibold text-gray-900">{{ certificate.completion_date }}</p>
+                            </div>
+                            <a href="{{ certificate.certificate_url }}" 
+                               class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150">
+                                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                                Download Certificate
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Track learning time
+let startTime = Date.now();
+let timeSpentMinutes = 0;
+
+// Update time spent every minute
+setInterval(() => {
+    timeSpentMinutes = Math.floor((Date.now() - startTime) / 60000);
+    if (timeSpentMinutes > 0 && timeSpentMinutes % 5 === 0) { // Update every 5 minutes
+        updateLearningTime(timeSpentMinutes);
+    }
+}, 60000);
+
+async function updateLearningTime(minutes) {
+    try {
+        await fetch('/track/learning-time?course_id={{ course.id }}&minutes=' + minutes, {
+            method: 'POST'
+        });
+    } catch (error) {
+        console.error('Error updating learning time:', error);
+    }
+}
+
+async function toggleModuleCompletion(moduleId) {
+    try {
+        const response = await fetch('/courses/{{ course.id }}/progress', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                module_id: moduleId,
+                completed: !document.querySelector(`[data-module-id="${moduleId}"]`).classList.contains('completed')
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            updateProgressUI(data);
+        }
+    } catch (error) {
+        console.error('Error toggling module completion:', error);
+    }
+}
+
+async function generateCertificate() {
+    try {
+        const response = await fetch('/certificates/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                course_id: '{{ course.id }}'
+            })
+        });
+
+        if (response.ok) {
+            const certificate = await response.json();
+            window.location.reload(); // Reload to show certificate
+        }
+    } catch (error) {
+        console.error('Error generating certificate:', error);
+    }
+}
+
+function updateProgressUI(data) {
+    const progressBar = document.querySelector('.progress-bar');
+    const progressText = document.querySelector('.progress-text');
+    
+    if (progressBar && progressText) {
+        progressBar.style.width = `${data.progress}%`;
+        progressText.textContent = `${data.progress}%`;
+    }
+
+    // Update module completion status
+    data.completed_modules.forEach(moduleId => {
+        const moduleElement = document.querySelector(`[data-module-id="${moduleId}"]`);
+        if (moduleElement) {
+            moduleElement.classList.add('completed');
+            moduleElement.querySelector('button').innerHTML = `
+                <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Completed
+            `;
+        }
+    });
+
+    // Show certificate button if course is completed
+    if (data.progress === 100) {
+        const certificateButton = document.createElement('button');
+        certificateButton.onclick = generateCertificate;
+        certificateButton.className = 'certificate-button'; // Add your styles
+        certificateButton.innerHTML = 'Get Certificate';
+        document.querySelector('.course-actions').appendChild(certificateButton);
+    }
+}
+</script>
+{% endblock %}

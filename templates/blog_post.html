@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Blog Post Header -->
+    <div class="blog-header mb-5">
+        {% if blog_post.image_url %}
+        <div class="blog-image-container mb-4">
+            <img src="{{ blog_post.image_url }}" alt="{{ blog_post.title }}" class="blog-hero-image">
+        </div>
+        {% endif %}
+        
+        <h1 class="blog-title mb-3">{{ blog_post.title }}</h1>
+        
+        <div class="blog-meta mb-4">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <img src="{{ teacher.profile_image or 'https://via.placeholder.com/50' }}" 
+                         alt="{{ teacher.full_name }}" 
+                         class="rounded-circle author-image">
+                </div>
+                <div class="col">
+                    <div class="author-name">{{ teacher.full_name }}</div>
+                    <div class="text-muted">
+                        Posted on {{ blog_post.created_at.strftime('%B %d, %Y') }}
+                        {% if blog_post.updated_at != blog_post.created_at %}
+                        · Updated on {{ blog_post.updated_at.strftime('%B %d, %Y') }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blog Content -->
+    <div class="blog-content mb-5">
+        {{ blog_post.content | safe }}
+    </div>
+
+    <!-- Comments Section -->
+    <div class="comments-section">
+        <h3 class="mb-4">Comments</h3>
+        
+        <!-- New Comment Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Leave a Comment</h5>
+                <form id="commentForm" onsubmit="submitComment(event)">
+                    <div class="mb-3">
+                        <label for="authorName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="authorName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="commentContent" class="form-label">Comment</label>
+                        <textarea class="form-control" id="commentContent" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Comments List -->
+        <div id="commentsList">
+            <!-- Will be populated by JavaScript -->
+        </div>
+    </div>
+</div>
+
+<script>
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function createCommentHTML(comment) {
+    const replies = comment.replies.map(reply => createCommentHTML(reply)).join('');
+    
+    return `
+        <div class="comment-card mb-3 ${comment.parent_id ? 'ms-5' : ''}">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">${comment.author_name}</h6>
+                    <p class="card-text">${comment.content}</p>
+                    <div class="comment-meta text-muted small">
+                        Posted on ${formatDate(comment.created_at)}
+                    </div>
+                    <button class="btn btn-sm btn-link" 
+                            onclick="showReplyForm(${comment.id})">
+                        Reply
+                    </button>
+                    <div id="replyForm-${comment.id}" style="display: none;" class="mt-3">
+                        <form onsubmit="submitReply(event, ${comment.id})">
+                            <div class="mb-3">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control form-control-sm" 
+                                       id="replyAuthor-${comment.id}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Reply</label>
+                                <textarea class="form-control form-control-sm" 
+                                          id="replyContent-${comment.id}" rows="2" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-primary">Submit Reply</button>
+                            <button type="button" class="btn btn-sm btn-secondary" 
+                                    onclick="hideReplyForm(${comment.id})">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            ${replies}
+        </div>
+    `;
+}
+
+async function loadComments() {
+    try {
+        const response = await fetch(`/api/blog/${blog_post.id}/comments`);
+        if (response.ok) {
+            const comments = await response.json();
+            const commentsList = document.getElementById('commentsList');
+            commentsList.innerHTML = comments.map(comment => createCommentHTML(comment)).join('');
+        }
+    } catch (error) {
+        console.error('Error loading comments:', error);
+    }
+}
+
+async function submitComment(event) {
+    event.preventDefault();
+    const authorName = document.getElementById('authorName').value;
+    const content = document.getElementById('commentContent').value;
+    
+    try {
+        const response = await fetch(`/api/blog/${blog_post.id}/comments`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                author_name: authorName,
+                content: content
+            })
+        });
+        
+        if (response.ok) {
+            document.getElementById('commentForm').reset();
+            await loadComments();
+        }
+    } catch (error) {
+        console.error('Error submitting comment:', error);
+    }
+}
+
+async function submitReply(event, parentId) {
+    event.preventDefault();
+    const authorName = document.getElementById(`replyAuthor-${parentId}`).value;
+    const content = document.getElementById(`replyContent-${parentId}`).value;
+    
+    try {
+        const response = await fetch(`/api/blog/${blog_post.id}/comments`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                author_name: authorName,
+                content: content,
+                parent_id: parentId
+            })
+        });
+        
+        if (response.ok) {
+            hideReplyForm(parentId);
+            await loadComments();
+        }
+    } catch (error) {
+        console.error('Error submitting reply:', error);
+    }
+}
+
+function showReplyForm(commentId) {
+    document.getElementById(`replyForm-${commentId}`).style.display = 'block';
+}
+
+function hideReplyForm(commentId) {
+    document.getElementById(`replyForm-${commentId}`).style.display = 'none';
+}
+
+// Load comments when page loads
+document.addEventListener('DOMContentLoaded', loadComments);
+</script>
+
+<style>
+.blog-hero-image {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.blog-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.blog-meta {
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 1rem;
+}
+
+.author-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.author-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.blog-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+.comment-card .card {
+    border-left: 3px solid #007bff;
+}
+
+.comment-meta {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Add some spacing for nested comments */
+.comment-card .comment-card {
+    margin-left: 2rem;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+        <div class="bg-gray-800 shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:px-6">
+                <h2 class="text-2xl font-bold leading-7 text-teal-400">Profile</h2>
+                <p class="mt-1 max-w-2xl text-sm text-gray-400">Your personal information and course progress.</p>
+            </div>
+            <div class="border-t border-gray-700">
+                <dl>
+                    <div class="bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-400">Full name</dt>
+                        <dd class="mt-1 text-sm text-white sm:mt-0 sm:col-span-2">{{ current_user.full_name }}</dd>
+                    </div>
+                    <div class="bg-gray-900 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-400">Username</dt>
+                        <dd class="mt-1 text-sm text-white sm:mt-0 sm:col-span-2">{{ current_user.username }}</dd>
+                    </div>
+                    <div class="bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-400">Email address</dt>
+                        <dd class="mt-1 text-sm text-white sm:mt-0 sm:col-span-2">{{ current_user.email }}</dd>
+                    </div>
+                    <div class="bg-gray-900 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-400">Member since</dt>
+                        <dd class="mt-1 text-sm text-white sm:mt-0 sm:col-span-2">{{ current_user.created_at.strftime('%B %d, %Y') }}</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <div class="mt-8 bg-gray-800 shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:px-6">
+                <h3 class="text-lg font-medium leading-6 text-teal-400">Enrolled Courses</h3>
+                <p class="mt-1 max-w-2xl text-sm text-gray-400">Your learning progress.</p>
+            </div>
+            <div class="border-t border-gray-700">
+                {% if enrolled_courses %}
+                <ul class="divide-y divide-gray-700">
+                    {% for course in enrolled_courses %}
+                    <li class="px-4 py-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="text-lg font-medium text-white">{{ course.title }}</h4>
+                                <p class="text-sm text-gray-400">Progress: {{ course.progress }}%</p>
+                            </div>
+                            <a href="/courses/{{ course.id }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-900 bg-teal-400 hover:bg-teal-300">
+                                Continue Learning
+                            </a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="px-4 py-5">
+                    <p class="text-center text-gray-400">You haven't enrolled in any courses yet.</p>
+                    <div class="mt-4 text-center">
+                        <a href="/courses" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-900 bg-teal-400 hover:bg-teal-300">
+                            Browse Courses
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

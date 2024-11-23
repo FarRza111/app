@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">About Us</h1>
+    
+    <!-- Company Story -->
+    <div class="mb-16">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Our Story</h2>
+        <p class="text-gray-600 mb-4">
+            Founded in 2023, our company has been at the forefront of innovation and excellence. 
+            We believe in creating solutions that make a difference in people's lives and businesses.
+        </p>
+        <p class="text-gray-600">
+            Our team of experts brings together years of experience and a passion for delivering 
+            exceptional results to every project we undertake.
+        </p>
+    </div>
+
+    <!-- Values -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Our Mission</h3>
+            <p class="text-gray-600">
+                To empower businesses with innovative solutions that drive growth and success 
+                in an ever-evolving digital landscape.
+            </p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Our Vision</h3>
+            <p class="text-gray-600">
+                To be the leading provider of transformative business solutions, recognized 
+                globally for our excellence and innovation.
+            </p>
+        </div>
+    </div>
+
+    <!-- Team Section -->
+    <div class="text-center">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-8">Our Leadership Team</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">John Doe</h3>
+                <p class="text-gray-500 mb-4">CEO & Founder</p>
+                <p class="text-gray-600">Visionary leader with 15+ years of industry experience</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Jane Smith</h3>
+                <p class="text-gray-500 mb-4">CTO</p>
+                <p class="text-gray-600">Technical expert driving innovation</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Mike Johnson</h3>
+                <p class="text-gray-500 mb-4">COO</p>
+                <p class="text-gray-600">Operations specialist ensuring excellence</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- User Overview -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Welcome back, {{ user.name }}!</h1>
+            <p class="mt-2 text-gray-600">Your learning journey continues...</p>
+        </div>
+
+        <!-- Learning Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100">
+                        <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h2 class="text-lg font-semibold text-gray-900">Current Streak</h2>
+                        <p class="text-3xl font-bold text-blue-600">{{ stats.streak_days }} days</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100">
+                        <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h2 class="text-lg font-semibold text-gray-900">Completed Courses</h2>
+                        <p class="text-3xl font-bold text-green-600">{{ stats.completed_courses }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-purple-100">
+                        <svg class="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h2 class="text-lg font-semibold text-gray-900">Hours Learned</h2>
+                        <p class="text-3xl font-bold text-purple-600">{{ stats.total_hours }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-yellow-100">
+                        <svg class="h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h2 class="text-lg font-semibold text-gray-900">Certificates</h2>
+                        <p class="text-3xl font-bold text-yellow-600">{{ stats.certificates }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course Progress -->
+        <div class="bg-white rounded-lg shadow mb-8">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Your Courses</h2>
+                <div class="space-y-6">
+                    {% for course in enrolled_courses %}
+                    <div class="border rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">{{ course.title }}</h3>
+                            <span class="px-3 py-1 rounded-full text-sm {% if course.progress == 100 %}bg-green-100 text-green-800{% else %}bg-blue-100 text-blue-800{% endif %}">
+                                {{ course.progress }}% Complete
+                            </span>
+                        </div>
+                        <div class="relative pt-1">
+                            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
+                                <div style="width:{{ course.progress }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center {% if course.progress == 100 %}bg-green-500{% else %}bg-blue-500{% endif %}"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="text-sm text-gray-600">
+                                {{ course.completed_modules }}/{{ course.total_modules }} modules completed
+                            </div>
+                            <a href="/courses/{{ course.id }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                Continue Learning →
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Certificates -->
+        <div class="bg-white rounded-lg shadow mb-8">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Your Certificates</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for cert in certificates %}
+                    <div class="border rounded-lg p-4 hover:shadow-lg transition-shadow duration-300">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">{{ cert.course_title }}</h3>
+                            <span class="text-sm text-gray-500">{{ cert.completion_date }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Certificate ID: {{ cert.id }}</span>
+                            <a href="/certificates/{{ cert.id }}/download" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+                                <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                                Download
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Streak Calendar -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Learning Streak</h2>
+                <div class="grid grid-cols-7 gap-2" id="streak-calendar">
+                    <!-- JavaScript will populate this -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Populate streak calendar
+function populateStreakCalendar() {
+    const calendar = document.getElementById('streak-calendar');
+    const streakData = {{ streak_data|tojson }};
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    
+    // Add day labels
+    days.forEach(day => {
+        const dayLabel = document.createElement('div');
+        dayLabel.className = 'text-center text-sm text-gray-500';
+        dayLabel.textContent = day;
+        calendar.appendChild(dayLabel);
+    });
+    
+    // Add calendar cells
+    streakData.forEach(day => {
+        const cell = document.createElement('div');
+        cell.className = `h-8 rounded ${day.active ? 'bg-green-500' : 'bg-gray-200'} 
+                         hover:opacity-75 transition-opacity duration-200`;
+        cell.title = `${day.date}: ${day.active ? 'Learning day' : 'No activity'}`;
+        calendar.appendChild(cell);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', populateStreakCalendar);
+</script>
+{% endblock %}

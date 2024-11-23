@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="gradient-text text-5xl font-bold mb-4">Tələb Olunan Texnoloji Bacarıqları Mənimsəyin</h1>
+    <p class="text-xl text-gray-400 mb-12">Sənaye mütəxəssislərindən Power BI, Python və SQL öyrənin</p>
+    
+    <!-- Featured Courses -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <!-- Power BI Course -->
+        <div class="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden hover-grow transform transition duration-300 hover:-translate-y-1">
+            <div class="relative overflow-hidden rounded-lg shadow-lg bg-gray-900">
+                <div class="relative">
+                    <img src="{{ url_for('static', path='images/powerbi-course.jpg') }}" 
+                         alt="Power BI Course" 
+                         class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105">
+                    <div class="absolute top-0 right-0 m-4">
+                        <span class="px-3 py-1 text-sm font-semibold text-green-900 bg-green-200 rounded-full">
+                            Başlanğıc
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6">
+                <h3 class="text-xl font-semibold text-teal-400 mb-2">Power BI Ustadlığı</h3>
+                <p class="text-gray-400 mb-4">Power BI ilə məlumatların vizuallaşdırılması və biznes analitikasında ustalaşın</p>
+                
+                <div class="mb-4">
+                    <h4 class="text-sm font-semibold text-teal-400 mb-1">Auditoriya:</h4>
+                    <p class="text-gray-400 text-sm">Məlumat analitikləri, biznes analitikləri və məlumatlarla işləyən mütəxəssislər üçün nəzərdə tutulub.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="text-sm font-semibold text-teal-400 mb-2">Nə öyrənəcəksiniz:</h4>
+                    <ul class="text-gray-400 text-sm space-y-2 pl-4">
+                        <li class="flex items-start">
+                            <span class="text-teal-400 mr-2">•</span>
+                            <span>Məlumatları effektiv şəkildə vizuallaşdırmağı və analitik hesabatlar yaratmağı</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-teal-400 mr-2">•</span>
+                            <span>DAX formulları ilə məlumatları modelləşdirməyi və hesablamağı</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-teal-400 mr-2">•</span>
+                            <span>İnteraktiv dashboardlar və biznes hesabatları hazırlamağı</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-2xl font-bold gradient-text">$99</span>
+                    <div class="flex items-center space-x-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-yellow-400"></i>
+                            <span class="text-gray-400 ml-1">4.8</span>
+                        </div>
+                        <span class="text-gray-600">•</span>
+                        <span class="text-gray-400">2,145 tələbə</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col space-y-2 mb-4">
+                    <div class="flex items-center text-sm text-gray-400">
+                        <i class="fas fa-clock mr-2 text-teal-400"></i>
+                        <span>12 həftə • 36 saat video</span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-400">
+                        <i class="fas fa-certificate mr-2 text-teal-400"></i>
+                        <span>Sertifikat daxildir</span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-400">
+                        <i class="fas fa-globe mr-2 text-teal-400"></i>
+                        <span>Azərbaycan dilində</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 mb-4">
+                    <a href="/courses/power-bi" class="gradient-bg text-gray-900 font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition duration-300 text-center">
+                        Ətraflı
+                    </a>
+                    <button onclick="showPreview('power-bi')" class="bg-gray-800 text-teal-400 font-semibold px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-300 text-center">
+                        Nümunə Dərs
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Python Course -->
+        <div class="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden hover-grow transform transition duration-300 hover:-translate-y-1">
+            <div class="relative overflow-hidden rounded-lg shadow-lg bg-gray-900">
+                <div class="relative">
+                    <img src="{{ url_for('static', path='images/python-course.jpg') }}" 
+                         alt="Python Course" 
+                         class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105">
+                    <div class="absolute top-0 right-0 m-4">
+                        <span class="px-3 py-1 text-sm font-semibold text-yellow-900 bg-yellow-200 rounded-full">
+                            Orta
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6">
+                <h3 class="text-xl font-semibold text-teal-400 mb-2">Python Proqramlaşdırma</h3>
+                <p class="text-gray-400 mb-4">Python proqramlaşdırmanı başlanğıcdan qabaqcıl səviyyəyə qədər öyrənin</p>
+                
+                <div class="mb-4">
+                    <h4 class="text-sm font-semibold text-teal-400 mb-1">Auditoriya:</h4>
+                    <p class="text-gray-400 text-sm">Proqramlaşdırmaya yeni başlayanlar və təcrübəli proqramçılar üçün uyğundur.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="text-sm font-semibold text-teal-400 mb-2">Nə öyrənəcəksiniz:</h4>
+                    <ul class="text-gray-400 text-sm space-y-2 pl-4">
+                        <li class="flex items-start">
+                            <span class="text-teal-400 mr-2">•</span>
+                            <span>Python dilinin əsas sintaksisi, məlumat strukturları və funksiyaları</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-teal-400 mr-2">•</span>
+                            <span>Obyekt yönümlü proqramlaşdırma və müasir Python framework-ləri</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-teal-400 mr-2">•</span>
+                            <span>Real layihələr üzərində veb tətbiqlərin yaradılması təcrübəsi</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-2xl font-bold gradient-text">$149</span>
+                    <div class="flex items-center space-x-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-yellow-400"></i>
+                            <span class="text-gray-400 ml-1">4.9</span>
+                        </div>
+                        <span class="text-gray-600">•</span>
+                        <span class="text-gray-400">1,823 tələbə</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col space-y-2 mb-4">
+                    <div class="flex items-center text-sm text-gray-400">
+                        <i class="fas fa-clock mr-2 text-teal-400"></i>
+                        <span>16 həftə • 48 saat video</span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-400">
+                        <i class="fas fa-certificate mr-2 text-teal-400"></i>
+                        <span>Sertifikat daxildir</span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-400">
+                        <i class="fas fa-globe mr-2 text-teal-400"></i>
+                        <span>Azərbaycan dilində</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 mb-4">
+                    <a href="/courses/python" class="gradient-bg text-gray-900 font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition duration-300 text-center">
+                        Ətraflı
+                    </a>
+                    <button onclick="showPreview('python')" class="bg-gray-800 text-teal-400 font-semibold px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-300 text-center">
+                        Nümunə Dərs
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SQL Course -->
+        <div class="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden hover-grow transform transition duration-300 hover:-translate-y-1">
+            <div class="relative overflow-hidden rounded-lg shadow-lg bg-gray-900">
+                <div class="relative">
+                    <img src="{{ url_for('static', path='images/sql-course.jpg') }}" 
+                         alt="SQL Course" 
+                         class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105">
+                    <div class="absolute top-0 right-0 m-4">
+                        <span class="px-3 py-1 text-sm font-semibold text-red-900 bg-red-200 rounded-full">
+                            İleri
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6">
+                <h3 class="text-xl font-semibold text-teal-400 mb-2">Məlumat Analizi üçün SQL</h3>
+                <p class="text-gray-400 mb-4">Məlumat analizi və verilənlər bazası idarəetməsi üçün SQL-də ustalaşın</p>
+                
+                <div class="mb-4">
+                    <h4 class="text-sm font-semibold text-teal-400 mb-1">Auditoriya:</h4>
+                    <p class="text-gray-400 text-sm">Məlumat bazaları ilə işləmək istəyən və məlumat analizi sahəsində çalışan mütəxəssislər üçün.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="text-sm font-semibold text-teal-400 mb-2">Nə öyrənəcəksiniz:</h4>
+                    <ul class="text-gray-400 text-sm space-y-2 pl-4">
+                        <li class="flex items-start">
+                            <span class="text-teal-400 mr-2">•</span>
+                            <span>SQL sorğularını yazmağı və məlumat bazası strukturunu optimallaşdırmağı</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-teal-400 mr-2">•</span>
+                            <span>Məlumat bazalarının effektiv idarə edilməsi və təhlükəsizliyi</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-teal-400 mr-2">•</span>
+                            <span>Kompleks analitik sorğular və məlumat transformasiyası</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-2xl font-bold gradient-text">$129</span>
+                    <div class="flex items-center space-x-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-yellow-400"></i>
+                            <span class="text-gray-400 ml-1">4.7</span>
+                        </div>
+                        <span class="text-gray-600">•</span>
+                        <span class="text-gray-400">1,456 tələbə</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col space-y-2 mb-4">
+                    <div class="flex items-center text-sm text-gray-400">
+                        <i class="fas fa-clock mr-2 text-teal-400"></i>
+                        <span>10 həftə • 24 saat video</span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-400">
+                        <i class="fas fa-certificate mr-2 text-teal-400"></i>
+                        <span>Sertifikat daxildir</span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-400">
+                        <i class="fas fa-globe mr-2 text-teal-400"></i>
+                        <span>Azərbaycan dilində</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 mb-4">
+                    <a href="/courses/sql" class="gradient-bg text-gray-900 font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition duration-300 text-center">
+                        Ətraflı
+                    </a>
+                    <button onclick="showPreview('sql')" class="bg-gray-800 text-teal-400 font-semibold px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-300 text-center">
+                        Nümunə Dərs
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="bg-gray-900 py-16 border-t border-b border-gray-800">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-teal-400 mb-8">Niyə Bizim Platformanı Seçməlisiniz?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-black p-6 rounded-lg border border-gray-800">
+                    <div class="gradient-text text-4xl mb-4">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-teal-400 mb-2">Ekspert Müəllimlər</h3>
+                    <p class="text-gray-400">Real təcrübəyə malik sənaye mütəxəssislərindən öyrənin</p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="bg-black p-6 rounded-lg border border-gray-800">
+                    <div class="gradient-text text-4xl mb-4">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-teal-400 mb-2">Öz Sürətinizlə Öyrənin</h3>
+                    <p class="text-gray-400">Kurs materiallarına istənilən vaxt, istənilən yerdən daxil olun</p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="bg-black p-6 rounded-lg border border-gray-800">
+                    <div class="gradient-text text-4xl mb-4">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-teal-400 mb-2">Sertifikat Qazanın</h3>
+                    <p class="text-gray-400">Kursu bitirdikdən sonra sertifikat əldə edin</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="bg-gray-900 py-16 border-t border-gray-800 mt-16">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-teal-400 mb-8">Tələbələrimizin Rəyləri</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Review 1 -->
+                <div class="bg-black p-6 rounded-lg border border-gray-800">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0">
+                            <img class="h-12 w-12 rounded-full" src="{{ url_for('static', path='images/avatar1.jpg') }}" alt="Student">
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="text-teal-400 font-semibold">Aynur Məmmədova</h4>
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-400">"Power BI kursu mənim üçün çox faydalı oldu. İndi işimdə data analitikası layihələrini daha effektiv şəkildə həyata keçirə bilirəm."</p>
+                </div>
+                <!-- Add more reviews -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Comparison Section -->
+    <div class="bg-black py-16">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-teal-400 mb-8">Kurs Səviyyələri</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-900 p-6 rounded-lg border border-gray-800">
+                    <h3 class="text-xl font-semibold text-teal-400 mb-4">Başlanğıc</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-teal-400 mr-2"></i>
+                            <span>Əsas konseptlər</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-teal-400 mr-2"></i>
+                            <span>Praktiki tapşırıqlar</span>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Add more levels -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

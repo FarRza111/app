@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">{{ 'Edit Course' if course else 'Add New Course' }}</h1>
+        
+        <form id="courseForm" class="space-y-6">
+            {% if course %}
+            <input type="hidden" name="id" value="{{ course.id }}">
+            {% endif %}
+            
+            <!-- Basic Information -->
+            <div class="bg-white shadow rounded-lg p-6 space-y-4">
+                <h2 class="text-xl font-semibold">Basic Information</h2>
+                
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Course Name</label>
+                        <input type="text" name="name" value="{{ course.name if course else '' }}" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Category</label>
+                        <select name="category" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            {% for category_id, category_name in categories.items() %}
+                            <option value="{{ category_id }}" {{ 'selected' if course and course.category == category_id else '' }}>
+                                {{ category_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Subtitle</label>
+                    <input type="text" name="subtitle" value="{{ course.subtitle if course else '' }}" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea name="description" rows="4" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ course.description if course else '' }}</textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Course Image URL</label>
+                    <input type="url" name="image" value="{{ course.image if course else '' }}" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+            </div>
+
+            <!-- Instructor Information -->
+            <div class="bg-white shadow rounded-lg p-6 space-y-4">
+                <h2 class="text-xl font-semibold">Instructor Information</h2>
+                
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Instructor Name</label>
+                        <input type="text" name="instructor_name" value="{{ course.instructor.name if course else '' }}" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Instructor Title</label>
+                        <input type="text" name="instructor_title" value="{{ course.instructor.title if course else '' }}" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Instructor Image URL</label>
+                    <input type="url" name="instructor_image" value="{{ course.instructor.image if course else '' }}" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Instructor Bio</label>
+                    <textarea name="instructor_bio" rows="3" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ course.instructor.bio if course else '' }}</textarea>
+                </div>
+            </div>
+
+            <!-- Course Features -->
+            <div class="bg-white shadow rounded-lg p-6 space-y-4">
+                <h2 class="text-xl font-semibold">Course Features</h2>
+                
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Level</label>
+                        <select name="level" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="Beginner" {{ 'selected' if course and course.features.level == 'Beginner' else '' }}>Beginner</option>
+                            <option value="Intermediate" {{ 'selected' if course and course.features.level == 'Intermediate' else '' }}>Intermediate</option>
+                            <option value="Advanced" {{ 'selected' if course and course.features.level == 'Advanced' else '' }}>Advanced</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Duration</label>
+                        <input type="text" name="duration" value="{{ course.features.duration if course else '' }}" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Number of Lectures</label>
+                        <input type="number" name="lectures" value="{{ course.features.lectures if course else '' }}" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Total Hours</label>
+                        <input type="number" name="hours" value="{{ course.features.hours if course else '' }}" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Number of Projects</label>
+                        <input type="number" name="projects" value="{{ course.features.projects if course else '' }}" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing -->
+            <div class="bg-white shadow rounded-lg p-6 space-y-4">
+                <h2 class="text-xl font-semibold">Pricing</h2>
+                
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Original Price</label>
+                        <input type="number" name="original_price" value="{{ course.price.original if course else '' }}" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Discounted Price</label>
+                        <input type="number" name="discounted_price" value="{{ course.price.discounted if course else '' }}" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Curriculum -->
+            <div class="bg-white shadow rounded-lg p-6 space-y-4">
+                <h2 class="text-xl font-semibold">Curriculum</h2>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Curriculum JSON</label>
+                    <div class="text-xs text-gray-500 mb-2">Format: [{"title": "Section Title", "lessons": ["Lesson 1", "Lesson 2"]}]</div>
+                    <textarea name="curriculum" rows="6" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 font-mono">{{ course.curriculum | tojson if course else '[]' }}</textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-4">
+                <a href="/admin/dashboard"
+                    class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                    Cancel
+                </a>
+                <button type="submit"
+                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                    {{ 'Update Course' if course else 'Create Course' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.getElementById('courseForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    try {
+        // Get form data
+        const formData = new FormData(e.target);
+        const courseId = formData.get('id');
+        
+        // Validate curriculum JSON
+        try {
+            const curriculum = JSON.parse(formData.get('curriculum'));
+            if (!Array.isArray(curriculum)) {
+                throw new Error('Curriculum must be an array');
+            }
+        } catch (error) {
+            alert('Invalid curriculum JSON format. Please check the format and try again.');
+            return;
+        }
+        
+        // Send request
+        const response = await fetch(
+            courseId ? `/admin/courses/${courseId}` : '/admin/courses',
+            {
+                method: courseId ? 'PUT' : 'POST',
+                body: formData
+            }
+        );
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.detail || 'Failed to save course');
+        }
+        
+        if (result.success) {
+            window.location.href = result.redirect;
+        } else {
+            throw new Error('Failed to save course');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert(error.message || 'An error occurred while saving the course');
+    }
+});
+</script>
+{% endblock %}

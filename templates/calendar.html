@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Manage Your Availability</h2>
+    
+    <!-- Add New Availability Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Add New Availability</h4>
+        </div>
+        <div class="card-body">
+            <form id="availabilityForm">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="dayOfWeek">Day of Week</label>
+                            <select class="form-control" id="dayOfWeek" required>
+                                <option value="0">Monday</option>
+                                <option value="1">Tuesday</option>
+                                <option value="2">Wednesday</option>
+                                <option value="3">Thursday</option>
+                                <option value="4">Friday</option>
+                                <option value="5">Saturday</option>
+                                <option value="6">Sunday</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="startTime">Start Time</label>
+                            <input type="time" class="form-control" id="startTime" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="endTime">End Time</label>
+                            <input type="time" class="form-control" id="endTime" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button type="submit" class="btn btn-primary btn-block">Add Availability</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Current Availability Table -->
+    <div class="card">
+        <div class="card-header">
+            <h4>Current Availability</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Day</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="availabilityTable">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+// Load availabilities when page loads
+document.addEventListener('DOMContentLoaded', loadAvailabilities);
+
+// Handle form submission
+document.getElementById('availabilityForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const data = {
+        day_of_week: parseInt(document.getElementById('dayOfWeek').value),
+        start_time: document.getElementById('startTime').value,
+        end_time: document.getElementById('endTime').value,
+        is_available: true
+    };
+
+    try {
+        const response = await fetch('/api/calendar/availability', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            loadAvailabilities();
+            document.getElementById('availabilityForm').reset();
+        } else {
+            alert('Failed to add availability');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to add availability');
+    }
+});
+
+async function loadAvailabilities() {
+    try {
+        const response = await fetch('/api/calendar/availability', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        
+        if (response.ok) {
+            const availabilities = await response.json();
+            const tableBody = document.getElementById('availabilityTable');
+            tableBody.innerHTML = '';
+            
+            availabilities.forEach(availability => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${days[availability.day_of_week]}</td>
+                    <td>${availability.start_time}</td>
+                    <td>${availability.end_time}</td>
+                    <td>
+                        <span class="badge badge-${availability.is_available ? 'success' : 'danger'}">
+                            ${availability.is_available ? 'Available' : 'Unavailable'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="deleteAvailability(${availability.id})">
+                            Delete
+                        </button>
+                        <button class="btn btn-sm btn-${availability.is_available ? 'warning' : 'success'}" 
+                                onclick="toggleAvailability(${availability.id}, ${!availability.is_available})">
+                            ${availability.is_available ? 'Mark Unavailable' : 'Mark Available'}
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+async function deleteAvailability(id) {
+    if (!confirm('Are you sure you want to delete this availability?')) return;
+    
+    try {
+        const response = await fetch(`/api/calendar/availability/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        
+        if (response.ok) {
+            loadAvailabilities();
+        } else {
+            alert('Failed to delete availability');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to delete availability');
+    }
+}
+
+async function toggleAvailability(id, newStatus) {
+    try {
+        const response = await fetch(`/api/calendar/availability/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ is_available: newStatus })
+        });
+        
+        if (response.ok) {
+            loadAvailabilities();
+        } else {
+            alert('Failed to update availability');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to update availability');
+    }
+}
+</script>
+{% endblock %}

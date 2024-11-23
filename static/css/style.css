@@ -1,0 +1,10 @@
+/* Custom styles */
+.hover-grow {
+    transition: transform 0.2s;
+}
+
+.hover-grow:hover {
+    transform: scale(1.05);
+}
+
+/* Additional custom styles can be added here */

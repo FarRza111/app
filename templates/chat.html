@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="bg-gray-800 shadow-lg rounded-lg overflow-hidden">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold text-teal-400 mb-4">Chat Support</h2>
+                <div id="chat-messages" class="space-y-4 h-96 overflow-y-auto mb-4">
+                    <!-- Messages will be inserted here -->
+                </div>
+                <form id="chat-form" class="flex space-x-4">
+                    <input type="text" id="message-input" 
+                           class="flex-1 rounded-lg border-gray-700 bg-gray-900 text-white placeholder-gray-500 focus:border-teal-500 focus:ring-teal-500"
+                           placeholder="Type your message...">
+                    <button type="submit"
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-gray-900 bg-teal-400 hover:bg-teal-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                        Send
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const chatMessages = document.getElementById('chat-messages');
+const chatForm = document.getElementById('chat-form');
+const messageInput = document.getElementById('message-input');
+
+function addMessage(message, sender) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+    
+    const messageBubble = document.createElement('div');
+    messageBubble.className = `max-w-sm rounded-lg p-4 ${
+        sender === 'user' 
+            ? 'bg-teal-400 text-gray-900' 
+            : 'bg-gray-700 text-white'
+    }`;
+    messageBubble.textContent = message;
+    
+    messageDiv.appendChild(messageBubble);
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const message = messageInput.value.trim();
+    if (!message) return;
+    
+    // Add user message to chat
+    addMessage(message, 'user');
+    messageInput.value = '';
+    
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                message: message,
+                sender: 'user'
+            })
+        });
+        
+        const data = await response.json();
+        
+        // Add bot response to chat
+        addMessage(data.response, 'bot');
+    } catch (error) {
+        console.error('Error:', error);
+        addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+    }
+});
+
+// Add initial greeting
+addMessage('Hello! How can I help you today?', 'bot');
+</script>
+{% endblock %}

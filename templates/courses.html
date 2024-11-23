@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Search and Filter Section -->
+        <div class="mb-8 bg-white rounded-lg shadow p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="search" class="block text-sm font-medium text-gray-700">Search Courses</label>
+                    <input type="text" id="search" placeholder="Search by title or description"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="priceRange" class="block text-sm font-medium text-gray-700">Price Range</label>
+                    <select id="priceRange"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">All Prices</option>
+                        <option value="0-50">$0 - $50</option>
+                        <option value="51-100">$51 - $100</option>
+                        <option value="101-200">$101 - $200</option>
+                        <option value="201+">$201+</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="duration" class="block text-sm font-medium text-gray-700">Duration</label>
+                    <select id="duration"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">All Durations</option>
+                        <option value="0-4">0-4 weeks</option>
+                        <option value="5-8">5-8 weeks</option>
+                        <option value="9-12">9-12 weeks</option>
+                        <option value="13+">13+ weeks</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course Grid -->
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" id="courseGrid">
+            {% for course_id, course in courses.items() %}
+            <div class="course-card bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                data-price="{{ course.price }}" data-duration="{{ course.duration }}" data-title="{{ course.title | lower }}"
+                data-description="{{ course.description | lower }}">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-900">{{ course.title }}</h3>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                            ${{ course.price }}
+                        </span>
+                    </div>
+                    <p class="text-gray-600 mb-4">{{ course.description }}</p>
+                    <div class="flex items-center text-sm text-gray-500 mb-4">
+                        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        {{ course.duration }}
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">{{ course.modules | length }} modules</span>
+                        <div class="space-x-2">
+                            <a href="/courses/{{ course_id }}"
+                                class="inline-flex items-center px-3 py-1.5 border border-blue-600 text-sm font-medium rounded-md text-blue-600 hover:bg-blue-50">
+                                Learn More
+                            </a>
+                            <a href="/courses/{{ course_id }}"
+                                class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                                View Course
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- No Results Message -->
+        <div id="noResults" class="hidden text-center py-12">
+            <h3 class="text-lg font-medium text-gray-900">No courses found</h3>
+            <p class="mt-2 text-sm text-gray-500">Try adjusting your search or filter criteria</p>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterCourses() {
+    const searchTerm = document.getElementById('search').value.toLowerCase();
+    const priceRange = document.getElementById('priceRange').value;
+    const duration = document.getElementById('duration').value;
+    const courses = document.querySelectorAll('.course-card');
+    let visibleCount = 0;
+
+    courses.forEach(course => {
+        const price = parseFloat(course.dataset.price);
+        const courseTitle = course.dataset.title;
+        const courseDescription = course.dataset.description;
+        const courseDuration = parseInt(course.dataset.duration);
+
+        let priceMatch = true;
+        if (priceRange) {
+            const [min, max] = priceRange.split('-').map(n => n === '+' ? Infinity : Number(n));
+            priceMatch = price >= min && (max === Infinity ? true : price <= max);
+        }
+
+        let durationMatch = true;
+        if (duration) {
+            const [min, max] = duration.split('-').map(n => n === '+' ? Infinity : Number(n));
+            durationMatch = courseDuration >= min && (max === Infinity ? true : courseDuration <= max);
+        }
+
+        const searchMatch = courseTitle.includes(searchTerm) || courseDescription.includes(searchTerm);
+
+        if (priceMatch && durationMatch && searchMatch) {
+            course.classList.remove('hidden');
+            visibleCount++;
+        } else {
+            course.classList.add('hidden');
+        }
+    });
+
+    // Show/hide no results message
+    document.getElementById('noResults').classList.toggle('hidden', visibleCount > 0);
+}
+
+// Add event listeners
+document.getElementById('search').addEventListener('input', filterCourses);
+document.getElementById('priceRange').addEventListener('change', filterCourses);
+document.getElementById('duration').addEventListener('change', filterCourses);
+</script>
+{% endblock %}

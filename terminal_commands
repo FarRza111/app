@@ -1,0 +1,31 @@
+ lsof -i :8003 -t
+
+
+-------Email Setup--------
+Google Security 2 step Verification
+Registed App Name
+Copy Paste password from screen to .env
+----------------------
+
+
+-------API DOC------------
+
+GET /admin/api/courses/{course_id} - Get course details
+POST /admin/api/courses - Create new course
+PUT /admin/api/courses/{course_id} - Update course
+DELETE /admin/api/courses/{course_id} - Delete course
+
+
+------Post Modules---------
+[
+  {
+    "title": "Module 1 Title",
+    "description": "Module 1 Description"
+  },
+  {
+    "title": "Module 2 Title",
+    "description": "Module 2 Description"
+  }
+]
+
+
