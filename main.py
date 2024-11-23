@@ -180,6 +180,113 @@ categories = {
     "blockchain": "Blokçeyn"
 }
 
+# Convert courses list to dictionary
+courses_list = [
+    {
+        "id": "python-programming",
+        "category": "programming",
+        "name": "Python Proqramlaşdırma",
+        "subtitle": "Sıfırdan Professional Python Developer",
+        "description": "Python proqramlaşdırma dilini əsaslarından başlayaraq professional səviyyəyə qədər öyrənin. Web development, data science və süni intellekt sahələrində istifadə üçün lazım olan bütün bacarıqları əldə edin.",
+        "image": "/static/images/courses/python-course.jpg",
+        "instructor": {
+            "name": "Rustam Kisi",
+            "title": "Senior Software Engineer",
+            "image": "/static/images/instructors/ali-mammadov.jpg",
+            "bio": "10+ illik proqramlaşdırma təcrübəsi"
+        },
+        "stats": {
+            "students": 3278,
+            "reviews": 458,
+            "rating": 4.9
+        },
+        "features": {
+            "level": "Ileri",
+            "duration": "16 həftə",
+            "lectures": 124,
+            "hours": 42,
+            "projects": 8
+        },
+        "price": {
+            "original": 599,
+            "discounted": 299
+        },
+        "curriculum": [
+            {
+                "title": "Python Təməlləri",
+                "lessons": [
+                    "Python-a Giriş və Quraşdırma",
+                    "Dəyişənlər və Data Tipləri",
+                    "Nəzarət Strukturları",
+                    "Funksiyalar və Modullar"
+                ]
+            },
+            {
+                "title": "Object Oriented Programming",
+                "lessons": [
+                    "OOP Konsepsiyaları",
+                    "Klaslar və Obyektlər",
+                    "İnheritance və Polymorphism",
+                    "Encapsulation və Abstraction"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "data-analytics",
+        "category": "data_science",
+        "name": "Data Analitikasi",
+        "subtitle": "Data ilə İşləmə və Vizuallaşdırma",
+        "description": "Məlumatların toplanması, təmizlənməsi, analizi və vizuallaşdırılması üçün lazım olan bütün metodları öyrənin. SQL və Power BI ilə işləməyi mənimsəyin.",
+        "image": "/static/images/courses/powerbi-course.jpg",
+        "instructor": {
+            "name": "Fariz Rzayev",
+            "title": "Senior Data Scientist",
+            "image": "/static/images/instructors/leyla-hasanova.jpg",
+            "bio": "8+ illik data analitika təcrübəsi"
+        },
+        "stats": {
+            "students": 2145,
+            "reviews": 312,
+            "rating": 4.8
+        },
+        "features": {
+            "level": "Orta",
+            "duration": "14 həftə",
+            "lectures": 98,
+            "hours": 38,
+            "projects": 6
+        },
+        "price": {
+            "original": 699,
+            "discounted": 349
+        },
+        "curriculum": [
+            {
+                "title": "Data Analitika Təməlləri",
+                "lessons": [
+                    "Data Analitikaya Giriş",
+                    "SQL ilə Data Manipulyasiyası",
+                    "Python ilə Data Analizi",
+                    "Statistik Analiz Metodları"
+                ]
+            },
+            {
+                "title": "Vizuallaşdırma",
+                "lessons": [
+                    "Power BI Əsasları",
+                    "Tableau ilə Dashboard Yaratma",
+                    "İnteraktiv Vizuallar",
+                    "Data Storytelling"
+                ]
+            }
+        ]
+    }
+]
+
+# Convert list to dictionary with course IDs as keys
+courses = {course["id"]: course for course in courses_list}
+
 # Add request processing middleware after session middleware
 @app.middleware("http")
 async def process_request(request: Request, call_next):
@@ -267,26 +374,22 @@ blog_posts = [
 ]
 
 @app.get("/", response_class=HTMLResponse)
-async def read_root(request: Request, db: Session = Depends(get_db)):
+async def read_root(request: Request):
     """Render the home page."""
     try:
         # Get featured courses (latest 3 courses)
-        featured_courses = db.query(Course).order_by(Course.id.desc()).limit(3).all()
+        featured_courses = courses_list[:3]  # Get first 3 courses
         
         # Get recent blog posts
-        recent_blog_posts = db.query(BlogPost).filter(BlogPost.published == True).order_by(BlogPost.created_at.desc()).limit(3).all()
+        recent_blog_posts = []  # We can populate this later if needed
         
-        # Get all categories for the navigation menu
-        categories = {}
+        # Organize courses by category
         categorized_courses = {}
-        courses = db.query(Course).all()
-        
-        for course in courses:
-            if course.category_id and course.category_name:
-                categories[course.category_id] = course.category_name
-                if course.category_id not in categorized_courses:
-                    categorized_courses[course.category_id] = []
-                categorized_courses[course.category_id].append(course)
+        for course in courses_list:
+            category = course["category"]
+            if category not in categorized_courses:
+                categorized_courses[category] = []
+            categorized_courses[category].append(course)
         
         return templates.TemplateResponse(
             "index.html",
@@ -301,7 +404,6 @@ async def read_root(request: Request, db: Session = Depends(get_db)):
         )
     except Exception as e:
         logging.error(f"Error in home route: {str(e)}")
-        logging.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/courses/{course_id}", response_class=HTMLResponse)
