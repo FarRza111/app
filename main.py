@@ -3,6 +3,13 @@ from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.authentication import AuthenticationMiddleware
+from starlette.authentication import AuthenticationBackend, SimpleUser, AuthCredentials
+from fastapi import FastAPI, Request, HTTPException, Depends, Form, File, UploadFile, status
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.background import BackgroundTasks
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
@@ -18,7 +25,7 @@ from datetime import datetime, timedelta
 
 from database.database import engine, Base, get_db
 
-from routers import chatbot, testimonials, blog
+from routers import chatbot, testimonials, blog, schedule, admin
 from services import CourseService
 from models.database_models import Course, BlogPost, User, Testimonial
 import aiosmtplib
@@ -165,6 +172,8 @@ class MeetingRequest(BaseModel):
 app.include_router(chatbot.router, prefix="/api", tags=["chat"])
 app.include_router(testimonials.router, prefix="/api", tags=["testimonials"])
 app.include_router(blog.router, tags=["blog"])
+app.include_router(schedule.router, tags=["schedule"])
+app.include_router(admin.router, tags=["admin"])
 
 # Course categories
 categories = {
@@ -842,3 +851,11 @@ async def enroll_course(
     except Exception as e:
         logger.error(f"Error enrolling in course: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+class BasicAuthBackend(AuthenticationBackend):
+    async def authenticate(self, request):
+        # For now, we'll just return a basic user without authentication
+        return AuthCredentials(["authenticated"]), SimpleUser("guest")
+
+# Add authentication middleware
+app.add_middleware(AuthenticationMiddleware, backend=BasicAuthBackend())

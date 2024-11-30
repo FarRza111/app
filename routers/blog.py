@@ -10,9 +10,6 @@ from slugify import slugify
 
 from database.database import get_db
 from models.database_models import BlogPost, User
-# from auth.auth import get_current_user
-
-from starlette.authentication import requires
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -53,39 +50,31 @@ async def blog_detail(request: Request, slug: str, db: Session = Depends(get_db)
     return templates.TemplateResponse("blog/detail.html", {
         "request": request,
         "blog_post": blog_post,
-        "author": blog_post.author,
         "categories": categories,
         "current_time": datetime.now()
     })
 
-@router.get("/admin/blog/new", response_class=HTMLResponse)
-@requires("authenticated")
+@router.get("/create-blog", response_class=HTMLResponse)
 async def new_blog_post(request: Request):
     """Display form to create new blog post"""
-    return templates.TemplateResponse("admin/blog/form.html", {
+    return templates.TemplateResponse("blog/create.html", {
         "request": request,
-        "is_edit": False,
         "categories": categories,
         "current_time": datetime.now()
     })
 
-@router.post("/admin/blog/new")
-@requires("authenticated")
+@router.post("/create-blog")
 async def create_blog_post(
     request: Request,
     title: str = Form(...),
     content: str = Form(...),
-    summary: str = Form(...),
-    published: bool = Form(False),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db)
 ):
     """Create a new blog post"""
-    current_user = await get_current_user(request)
-    
     # Handle image upload
     image_url = None
-    if image:
+    if image and image.filename:
         # Create uploads directory if it doesn't exist
         os.makedirs("static/uploads/blog", exist_ok=True)
         
@@ -99,40 +88,33 @@ async def create_blog_post(
     # Create slug from title
     slug = slugify(title)
     
-    # Create blog post
-    blog_post = BlogPost(
+    # Create new blog post
+    new_post = BlogPost(
         title=title,
         content=content,
-        summary=summary,
         slug=slug,
-        published=published,
         featured_image=image_url,
-        author_id=current_user.id
+        published=True,
+        created_at=datetime.now(),
+        updated_at=datetime.now()
     )
     
-    db.add(blog_post)
+    db.add(new_post)
     db.commit()
-    db.refresh(blog_post)
+    db.refresh(new_post)
     
-    return RedirectResponse(url=f"/blog/{blog_post.slug}", status_code=303)
+    return RedirectResponse(url=f"/blog/{new_post.slug}", status_code=303)
 
 @router.get("/admin/blog/{blog_id}/edit", response_class=HTMLResponse)
-@requires("authenticated")
 async def edit_blog_post(
     request: Request,
     blog_id: int,
     db: Session = Depends(get_db)
 ):
     """Display form to edit blog post"""
-    # Get current user from session
-    current_user = await get_current_user(request)
-    
     blog_post = db.query(BlogPost).filter(BlogPost.id == blog_id).first()
     if not blog_post:
         raise HTTPException(status_code=404, detail="Blog post not found")
-    
-    if blog_post.author_id != current_user.id:
-        raise HTTPException(status_code=403, detail="You can only edit your own blog posts")
     
     return templates.TemplateResponse("admin/blog/form.html", {
         "request": request,
@@ -143,30 +125,21 @@ async def edit_blog_post(
     })
 
 @router.post("/admin/blog/{blog_id}/edit")
-@requires("authenticated")
 async def update_blog_post(
     request: Request,
     blog_id: int,
     title: str = Form(...),
     content: str = Form(...),
-    summary: str = Form(...),
-    published: bool = Form(False),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db)
 ):
     """Update an existing blog post"""
-    # Get current user from session
-    current_user = await get_current_user(request)
-    
     blog_post = db.query(BlogPost).filter(BlogPost.id == blog_id).first()
     if not blog_post:
         raise HTTPException(status_code=404, detail="Blog post not found")
     
-    if blog_post.author_id != current_user.id:
-        raise HTTPException(status_code=403, detail="You can only edit your own blog posts")
-    
     # Handle image upload
-    if image:
+    if image and image.filename:
         # Remove old image if it exists
         if blog_post.featured_image:
             old_image_path = f"static{blog_post.featured_image}"
@@ -183,8 +156,6 @@ async def update_blog_post(
     # Update blog post
     blog_post.title = title
     blog_post.content = content
-    blog_post.summary = summary
-    blog_post.published = published
     
     db.commit()
     db.refresh(blog_post)
@@ -192,22 +163,15 @@ async def update_blog_post(
     return RedirectResponse(url=f"/blog/{blog_post.slug}", status_code=303)
 
 @router.delete("/admin/blog/{blog_id}")
-@requires("authenticated")
 async def delete_blog_post(
     request: Request,
     blog_id: int,
     db: Session = Depends(get_db)
 ):
     """Delete a blog post"""
-    # Get current user from session
-    current_user = await get_current_user(request)
-    
     blog_post = db.query(BlogPost).filter(BlogPost.id == blog_id).first()
     if not blog_post:
         raise HTTPException(status_code=404, detail="Blog post not found")
-    
-    if blog_post.author_id != current_user.id:
-        raise HTTPException(status_code=403, detail="You can only delete your own blog posts")
     
     # Remove image if it exists
     if blog_post.featured_image:
@@ -221,16 +185,12 @@ async def delete_blog_post(
     return {"success": True}
 
 @router.post("/admin/blog/upload-image")
-@requires("authenticated")
 async def upload_image(
     request: Request,
     image: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
     """Upload an image for TinyMCE"""
-    # Get current user from session
-    current_user = await get_current_user(request)
-    
     try:
         # Create uploads directory if it doesn't exist
         os.makedirs("static/uploads/blog/content", exist_ok=True)

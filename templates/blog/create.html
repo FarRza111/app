@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Blog Post - Texniki Təhsil Mərkəzi{% endblock %}
+
+{% block head %}
+<!-- Add SimpleMDE CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">Create New Blog Post</h1>
+        
+        <form action="{{ url_for('create_blog_post') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <div>
+                <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+                <input type="text" name="title" id="title" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
+            </div>
+
+            <div>
+                <label for="image" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Featured Image</label>
+                <input type="file" name="image" id="image" accept="image/*"
+                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-300">
+            </div>
+
+            <div>
+                <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Content</label>
+                <div class="mt-1">
+                    <textarea id="content" name="content" rows="20" required></textarea>
+                </div>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    You can use Markdown formatting for rich text.
+                </p>
+            </div>
+
+            <div class="flex justify-end space-x-4">
+                <a href="{{ url_for('blog_list') }}"
+                    class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-700">
+                    Cancel
+                </a>
+                <button type="submit"
+                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Create Post
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var simplemde = new SimpleMDE({ 
+        element: document.getElementById("content"),
+        spellChecker: false,
+        status: false,
+        toolbar: [
+            "bold", "italic", "heading", "|",
+            "quote", "unordered-list", "ordered-list", "|",
+            "link", "image", "|",
+            "preview", "side-by-side", "fullscreen",
+        ]
+    });
+});
+</script>
+{% endblock %}

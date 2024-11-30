@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <!-- Booking Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Konsultasiya Təyin Edin</h1>
+            <p class="text-lg text-gray-600">Sizə uyğun vaxtı seçin və konsultasiya təyin edin</p>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Calendar Section -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+            
+            <!-- Booking Form -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Məlumatlarınızı daxil edin</h3>
+                    <form id="bookingForm" class="space-y-4">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Ad və Soyad</label>
+                            <input type="text" id="name" name="name" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" id="email" name="email" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700">Telefon</label>
+                            <input type="tel" id="phone" name="phone" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label for="topic" class="block text-sm font-medium text-gray-700">Konsultasiya Mövzusu</label>
+                            <select id="topic" name="topic" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option value="">Seçin...</option>
+                                <option value="power_bi">Power BI</option>
+                                <option value="sql">SQL</option>
+                                <option value="data_analytics">Data Analytics</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-700">Əlavə qeydlər</label>
+                            <textarea id="message" name="message" rows="3"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                        </div>
+
+                        <div>
+                            <input type="hidden" id="selectedDate" name="selectedDate">
+                            <input type="hidden" id="selectedTime" name="selectedTime">
+                        </div>
+                        
+                        <button type="submit"
+                            class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 px-4 rounded-md hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Təsdiq Et
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Calendar Scripts -->
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.js'></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var selectedEvent = null;
+    
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        slotMinTime: '09:00:00',
+        slotMaxTime: '18:00:00',
+        slotDuration: '01:00:00',
+        allDaySlot: false,
+        locale: 'az',
+        selectMirror: true,
+        selectable: true,
+        businessHours: {
+            daysOfWeek: [1, 2, 3, 4, 5], // Monday - Friday
+            startTime: '09:00',
+            endTime: '18:00',
+        },
+        selectConstraint: 'businessHours',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'timeGridWeek,timeGridDay'
+        },
+        buttonText: {
+            today: 'Bu gün',
+            week: 'Həftə',
+            day: 'Gün'
+        },
+        select: function(info) {
+            // Clear any previously selected events
+            if (selectedEvent) {
+                selectedEvent.remove();
+            }
+            
+            // Create a temporary event
+            selectedEvent = calendar.addEvent({
+                start: info.start,
+                end: info.end,
+                backgroundColor: '#3B82F6',
+                borderColor: '#3B82F6'
+            });
+            
+            // Update hidden form fields
+            document.getElementById('selectedDate').value = info.start.toISOString().split('T')[0];
+            document.getElementById('selectedTime').value = info.start.toISOString().split('T')[1].slice(0, 5);
+        }
+    });
+    
+    calendar.render();
+    
+    // Handle form submission
+    document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        if (!selectedEvent) {
+            alert('Zəhmət olmasa əvvəlcə tarix və vaxt seçin');
+            return;
+        }
+        
+        const formData = new FormData(e.target);
+        const bookingData = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            phone: formData.get('phone'),
+            topic: formData.get('topic'),
+            message: formData.get('message'),
+            date: formData.get('selectedDate'),
+            time: formData.get('selectedTime')
+        };
+        
+        try {
+            const response = await fetch('/api/schedule', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bookingData)
+            });
+            
+            if (response.ok) {
+                alert('Konsultasiya uğurla təyin edildi!');
+                calendar.unselect();
+                e.target.reset();
+                if (selectedEvent) {
+                    selectedEvent.remove();
+                    selectedEvent = null;
+                }
+            } else {
+                const error = await response.json();
+                alert(error.detail || 'Xəta baş verdi. Yenidən cəhd edin.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Xəta baş verdi. Yenidən cəhd edin.');
+        }
+    });
+});
+</script>
+{% endblock %}

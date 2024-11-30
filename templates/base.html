@@ -21,90 +21,70 @@
     <script defer src="{{ url_for('static', path='/js/theme-init.js') }}"></script>
     <script defer src="{{ url_for('static', path='/js/testimonials.js') }}"></script>
     
+    {% block head %}{% endblock %}
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-theme-primary text-theme-primary min-h-screen flex flex-col theme-transition">
     <!-- Navigation -->
-    <nav class="bg-theme-secondary border-b border-theme theme-transition sticky top-0 z-50" x-data="{ open: false }">
+    <nav class="fixed w-full top-0 z-50 bg-black/95 backdrop-blur-sm border-b border-gray-800" x-data="{ open: false }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
+            <div class="flex justify-between h-24">
                 <!-- Logo and Main Nav -->
                 <div class="flex items-center">
-                    <a href="/" class="flex items-center">
-                        <span class="text-2xl font-bold bg-gradient-to-r from-teal-400 to-blue-500 bg-clip-text text-transparent">
-                            Texniki Təhsil Mərkəzi
-                        </span>
-                    </a>
-                    <p class="ml-4 text-sm text-theme-primary">Power BI, SQL və Data Analitikasını bizimlə Öyrən!</p>
-                </div>
-                <div class="hidden md:flex items-center space-x-8 ml-10">
-                    <a href="/" class="text-theme-primary hover:text-theme-secondary transition">Ana Səhifə</a>
-                    <div class="relative" x-data="{ open: false }">
-<!--                            <button @click="open = !open" class="text-theme-primary hover:text-theme-secondary transition flex items-center">-->
-<!--                                Kurslar-->
-<!--                                <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">-->
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                          d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            <div x-show="open" @click.away="open = false" 
-                                 class="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-theme-secondary ring-1 ring-black ring-opacity-5">
-                                {% for category_id, category_name in categories.items() %}
-                                <a href="/category/{{ category_id }}" 
-                                   class="block px-4 py-2 text-sm text-theme-primary hover:bg-theme-primary hover:bg-opacity-10">
-                                    {{ category_name }}
-                                </a>
-                                {% endfor %}
-                            </div>
+                    <a href="/" class="flex items-center group">
+                        <div class="relative h-10 w-10 mr-6">
+                            <img src="/static/images/logo.svg" alt="Logo" class="h-full w-full transition-transform duration-300 group-hover:scale-110">
                         </div>
-<!--                        <a href="/about" class="text-theme-primary hover:text-theme-secondary transition">Haqqımızda</a>-->
-<!--                        <a href="/contact" class="text-theme-primary hover:text-theme-secondary transition">Əlaqə</a>-->
-<!--                        <a href="/blog" class="text-theme-primary hover:text-theme-secondary transition">Blog</a>-->
-                    </div>
+                        <div class="flex flex-col">
+                            <span class="text-2xl font-semibold text-white tracking-tight transition-colors duration-300 group-hover:text-gray-300">
+                                FR Analytics
+                            </span>
+                            <span class="text-sm text-gray-400 tracking-wide">Məlumata əsaslanan mükəmməllik</span>
+                        </div>
+                    </a>
                 </div>
 
-                <!-- User Menu -->
-                <div class="hidden md:flex items-center space-x-4">
-                    {% if current_user %}
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center space-x-2">
-                            <img src="{{ current_user.avatar or url_for('static', path='images/default-avatar.png') }}" 
-                                 alt="Profile" 
-                                 class="w-8 h-8 rounded-full">
-                            <span class="text-theme-primary">{{ current_user.username }}</span>
-                        </button>
-                        <div x-show="open" @click.away="open = false" 
-                             class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-theme-secondary ring-1 ring-black ring-opacity-5">
-                            <a href="/dashboard" class="block px-4 py-2 text-sm text-theme-primary hover:bg-theme-primary hover:bg-opacity-10">
-                                Mənim Kurslarım
-                            </a>
-                            <a href="/profile" class="block px-4 py-2 text-sm text-theme-primary hover:bg-theme-primary hover:bg-opacity-10">
-                                Profil
-                            </a>
-                            <a href="/auth/logout" class="block px-4 py-2 text-red-400 hover:bg-gray-700">
-                                Çıxış
-                            </a>
+                <!-- Navigation Links -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <div class="relative group">
+                        <a href="#" class="text-sm font-medium text-gray-300 hover:text-white transition-colors duration-300 flex items-center gap-1">
+                            Kurslar
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </a>
+                        <div class="absolute left-0 mt-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-out">
+                            <div class="py-2 bg-black/95 backdrop-blur-sm rounded-lg shadow-xl border border-gray-800">
+                                <a href="/courses#data-analytics" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-800">
+                                    Data Analitikası
+                                </a>
+                                <a href="/courses#python" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-800">
+                                    Python Proqramlaşdırma
+                                </a>
+                                <a href="/courses#machine-learning" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-800">
+                                    Machine Learning
+                                </a>
+                                <a href="/courses#data-science" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-800">
+                                    Data Science
+                                </a>
+                                <a href="/courses#sql" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-800">
+                                    SQL və Verilənlər Bazası
+                                </a>
+                            </div>
                         </div>
                     </div>
-                    {% else %}
-<!--                    <a href="/auth/login" -->
-<!--                       class="bg-gradient-to-r from-teal-400 to-blue-500 text-white px-6 py-2 rounded-lg hover:opacity-90 transition">-->
-<!--                        Daxil ol-->
-<!--                    </a>-->
-<!--                    <a href="/auth/register" class="text-theme-primary hover:text-theme-secondary transition">-->
-<!--                        Qeydiyyat-->
-<!--                    </a>-->
-                    {% endif %}
+                    <a href="/blog" class="text-sm font-medium text-gray-300 hover:text-white transition-colors duration-300">Blog</a>
+                    <a href="/contact" class="text-sm font-medium text-gray-300 hover:text-white transition-colors duration-300">Əlaqə</a>
+                    <a href="#" class="inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-black bg-white rounded-md hover:bg-gray-100 transition-colors duration-300">
+                        Konsultasiya
+                    </a>
                 </div>
 
                 <!-- Mobile menu button -->
                 <div class="flex items-center md:hidden">
-                    <button @click="open = !open" class="text-theme-primary hover:text-theme-secondary">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path x-show="!open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                  d="M4 6h16M4 12h16M4 18h16" />
-                            <path x-show="open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                  d="M6 18L18 6M6 6l12 12" />
+                    <button @click="open = !open" class="text-gray-300 hover:text-white">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
                 </div>
@@ -112,196 +92,575 @@
         </div>
 
         <!-- Mobile menu -->
-        <div x-show="open" class="md:hidden bg-theme-secondary">
+        <div x-show="open" class="md:hidden bg-black border-t border-gray-800">
             <div class="px-2 pt-2 pb-3 space-y-1">
-                <a href="/" class="block px-3 py-2 text-theme-primary hover:bg-theme-primary hover:bg-opacity-10 rounded-md">Ana Səhifə</a>
-                {% for category_id, category_name in categories.items() %}
-                <a href="/category/{{ category_id }}" 
-                   class="block px-3 py-2 text-theme-primary hover:bg-theme-primary hover:bg-opacity-10 rounded-md">
-                    {{ category_name }}
-                </a>
-                {% endfor %}
-<!--                <a href="/about" class="block px-3 py-2 text-theme-primary hover:bg-theme-primary hover:bg-opacity-10 rounded-md">Haqqımızda</a>-->
-                <a href="/contact" class="block px-3 py-2 text-theme-primary hover:bg-theme-primary hover:bg-opacity-10 rounded-md">Əlaqə</a>
-<!--                <a href="/blog" class="block px-3 py-2 text-theme-primary hover:bg-theme-primary hover:bg-opacity-10 rounded-md">Blog</a>-->
-                {% if not current_user %}
-                <a href="/auth/login" class="block px-3 py-2 text-theme-primary hover:bg-theme-primary hover:bg-opacity-10 rounded-md">Daxil ol</a>
-                <a href="/auth/register" class="block px-3 py-2 text-theme-primary hover:bg-theme-primary hover:bg-opacity-10 rounded-md">Qeydiyyat</a>
-                {% endif %}
-            </div>
-            {% if current_user %}
-            <div class="border-t border-theme pt-4 pb-3">
-                <div class="flex items-center px-5">
-                    <img src="{{ current_user.avatar or url_for('static', path='images/default-avatar.png') }}" 
-                         alt="Profile" 
-                         class="w-8 h-8 rounded-full">
-                    <div class="ml-3">
-                        <div class="text-base font-medium text-theme-primary">{{ current_user.username }}</div>
-                        <div class="text-sm font-medium text-theme-secondary">{{ current_user.email }}</div>
+                <div class="space-y-1">
+                    <div class="px-3 py-2 text-base font-medium text-gray-300" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center justify-between w-full">
+                            <span>Kurslar</span>
+                            <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'transform rotate-180': open }" 
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="open" class="mt-2 space-y-1 pl-4">
+                            <a href="/courses#data-analytics" class="block py-2 text-sm text-gray-300 hover:text-white">
+                                Data Analitikası
+                            </a>
+                            <a href="/courses#python" class="block py-2 text-sm text-gray-300 hover:text-white">
+                                Python Proqramlaşdırma
+                            </a>
+                            <a href="/courses#machine-learning" class="block py-2 text-sm text-gray-300 hover:text-white">
+                                Machine Learning
+                            </a>
+                            <a href="/courses#data-science" class="block py-2 text-sm text-gray-300 hover:text-white">
+                                Data Science
+                            </a>
+                            <a href="/courses#sql" class="block py-2 text-sm text-gray-300 hover:text-white">
+                                SQL və Verilənlər Bazası
+                            </a>
+                        </div>
                     </div>
                 </div>
-                <div class="mt-3 px-2 space-y-1">
-                    <a href="/dashboard" class="block px-3 py-2 text-theme-primary hover:bg-theme-primary hover:bg-opacity-10 rounded-md">
-                        Mənim Kurslarım
-                    </a>
-                    <a href="/profile" class="block px-3 py-2 text-theme-primary hover:bg-theme-primary hover:bg-opacity-10 rounded-md">
-                        Profil
-                    </a>
-                    <a href="/auth/logout" class="block px-3 py-2 text-red-400 hover:bg-gray-700 rounded-md">
-                        Çıxış
-                    </a>
-                </div>
+                <a href="/blog" class="block px-3 py-2 text-base font-medium text-gray-300 hover:text-white">Blog</a>
+                <a href="/contact" class="block px-3 py-2 text-base font-medium text-gray-300 hover:text-white">Əlaqə</a>
+                <a href="#" class="block px-3 py-2 text-base font-medium text-gray-300 hover:text-white">Konsultasiya</a>
             </div>
-            {% endif %}
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="flex-grow">
-        {% block content %}{% endblock %}
-    </main>
+    <!-- Add padding for fixed header -->
+    <div class="pt-24">
+        <!-- Main Content -->
+        <main class="flex-grow">
+            {% block content %}{% endblock %}
+        </main>
 
-    <!-- Footer -->
-    <footer class="bg-theme-secondary border-t border-theme theme-transition">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-<!--                    <h3 class="text-lg font-semibold text-theme-primary mb-4">Haqqımızda</h3>-->
-                    <p class="text-theme-secondary text-sm">
-                        Texniki Təhsil Mərkəzi - Azərbaycanda peşəkar texniki təhsil platforması. 
-                        Biz tələbələrimizə yüksək keyfiyyətli onlayn kurslar təqdim edirik.
-                    </p>
-                </div>
-                <div>
-<!--                    <h3 class="text-lg font-semibold text-theme-primary mb-4">Faydalı Linklər</h3>-->
-<!--                    <ul class="space-y-2">-->
-<!--                        <li><a href="/about" class="text-theme-secondary hover:text-theme-primary text-sm">Haqqımızda</a></li>-->
-<!--                        <li><a href="/contact" class="text-theme-secondary hover:text-theme-primary text-sm">Əlaqə</a></li>-->
-<!--                        <li><a href="/privacy" class="text-theme-secondary hover:text-theme-primary text-sm">Gizlilik Siyasəti</a></li>-->
-<!--                        <li><a href="/terms" class="text-theme-secondary hover:text-theme-primary text-sm">İstifadə Şərtləri</a></li>-->
-<!--                    </ul>-->
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold text-theme-primary mb-4">Əlaqə</h3>
-                    <ul class="space-y-2">
-                        <li class="flex items-center text-theme-secondary text-sm">
-                            <i class="fas fa-phone mr-2"></i>
-                            +372 57874646
-                        </li>
-                        <li class="flex items-center text-theme-secondary text-sm">
-                            <i class="fas fa-envelope mr-2"></i>
-                            farrza111@gmail.com
-                        </li>
-                        <li class="flex items-center text-theme-secondary text-sm">
-                            <i class="fas fa-map-marker-alt mr-2"></i>
-                            Bakı, Azərbaycan
-                        </li>
-                    </ul>
-                    <div class="mt-4 flex space-x-4">
-                        <a href="#" class="text-theme-secondary hover:text-theme-primary">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="text-theme-secondary hover:text-theme-primary">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="text-theme-secondary hover:text-theme-primary">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
+        <!-- Footer -->
+        <footer class="bg-black text-gray-400 py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-4">FR Analytics</h3>
+                        <p class="text-sm">
+                            Azərbaycanda peşəkar texniki təhsil platforması. 
+                            Yüksək keyfiyyətli məlumat analitikası və konsultasiya xidmətləri təqdim edirik.
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-4">Əlaqə</h3>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
+                                +37257874646
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                farrza111@gmail.com
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Bakı, Azərbaycan
+                            </li>
+                        </ul>
                     </div>
                 </div>
+                <div class="mt-8 pt-8 border-t border-gray-800 text-center">
+                    <p class="text-sm">
+                        &copy; {{ current_time.year }} FR Analytics. Bütün hüquqlar qorunur.
+                    </p>
+                </div>
             </div>
-            <div class="mt-8 pt-8 border-t border-theme text-center">
-                <p class="text-theme-secondary text-sm">
-                    &copy; {{ current_time.year }} Texniki Təhsil Mərkəzi. Bütün hüquqlar qorunur.
-                </p>
+        </footer>
+
+        <!-- Book Meeting Modal -->
+        <div id="meetingModal" class="meeting-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="header-content">
+                        <div class="icon-container">
+                            <svg class="analytics-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <h2>Ekspertlərlə Məlumat Analitikasını Öyrən!</h2>
+                        <p class="header-description">Peşəkar təlimçilərimizlə birgə data analitikası sahəsində karyeranızı inkişaf etdirin</p>
+                    </div>
+                    <div class="stats-container">
+                        <div class="stat-item">
+                            <span class="stat-number">500+</span>
+                            <span class="stat-label">Məzun</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">50+</span>
+                            <span class="stat-label">Kurs</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">98%</span>
+                            <span class="stat-label">Məmnuniyyət</span>
+                        </div>
+                    </div>
+                    <div class="contact-buttons">
+                        <a href="https://api.whatsapp.com/send?phone=37257874646&text=Hi%2C%20I%27m%20interested%20in%20learning%20more" target="_blank" class="contact-btn whatsapp-btn">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                            </svg>
+                            <span>WhatsApp</span>
+                        </a>
+                        <a href="mailto:farrza111@gmail.com" class="contact-btn email-btn">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span>Email</span>
+                        </a>
+                    </div>
+                    <p class="modal-subtitle">Pulsuz konsultasiya üçün formu doldurun</p>
+                </div>
+                <form id="meetingForm" class="meeting-form">
+                    <div class="form-group">
+                        <label for="name">Ad və Soyad</label>
+                        <input type="text" id="name" name="name" placeholder="Ad və Soyadınız" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Email ünvanınız" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Telefon</label>
+                        <input type="tel" id="phone" name="phone" placeholder="+994 XX XXX XX XX" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Mesaj</label>
+                        <textarea id="message" name="message" rows="4" placeholder="Məlumat analitikası ilə bağlı suallarınızı yazın"></textarea>
+                    </div>
+                    <div class="form-info">
+                        <ul>
+                            <li>✓ Pulsuz ilkin konsultasiya</li>
+                            <li>✓ Peşəkar ekspertlərlə görüş</li>
+                            <li>✓ Fərdi tədris planı</li>
+                        </ul>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        Görüş Təyin Et
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                    </button>
+                </form>
+                <button class="close-btn" aria-label="Close modal">&times;</button>
             </div>
         </div>
-    </footer>
 
-    <!-- WhatsApp Button -->
-    <a href="https://wa.me/+37257874646" target="_blank" 
-       class="fixed bottom-6 right-6 bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-600 transition">
-        <i class="fab fa-whatsapp text-2xl"></i>
-    </a>
-
-    <!-- Book Meeting Modal -->
-    <div id="meetingModal" class="meeting-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Ekspertlərlə Məlumat Analitikasını Öyrən!</h2>
-                <div class="contact-buttons">
-                    <a href="https://wa.me/+37257874646" target="_blank" class="contact-btn whatsapp-btn">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                        </svg>
-                        <span>WhatsApp</span>
-                    </a>
-                    <a href="mailto:info@example.com" class="contact-btn email-btn">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        <span>Email</span>
-                    </a>
-                </div>
-                <p class="modal-subtitle">Pulsuz konsultasiya üçün formu doldurun</p>
+        <!-- Book Meeting Button -->
+        <a href="#" class="book-meeting-btn">
+            <div class="btn-content">
+                <span class="btn-title">Elə indi ödənişsiz Görüş Təyin Et</span>
             </div>
-            <form id="meetingForm" class="meeting-form">
-                <div class="form-group">
-                    <label for="name">Ad və Soyad</label>
-                    <input type="text" id="name" name="name" placeholder="Ad və Soyadınız" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" placeholder="Email ünvanınız" required>
-                </div>
-                <div class="form-group">
-                    <label for="phone">Telefon</label>
-                    <input type="tel" id="phone" name="phone" placeholder="+994 XX XXX XX XX" required>
-                </div>
-                <div class="form-group">
-                    <label for="message">Mesaj</label>
-                    <textarea id="message" name="message" rows="4" placeholder="Məlumat analitikası ilə bağlı suallarınızı yazın"></textarea>
-                </div>
-                <div class="form-info">
-                    <ul>
-                        <li>✓ Pulsuz ilkin konsultasiya</li>
-                        <li>✓ Peşəkar ekspertlərlə görüş</li>
-                        <li>✓ Fərdi tədris planı</li>
-                    </ul>
-                </div>
-                <button type="submit" class="submit-btn">
-                    Görüş Təyin Et
-                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                </button>
-            </form>
-            <button onclick="closeMeetingModal()" class="close-btn" aria-label="Close modal">&times;</button>
-        </div>
+            <svg class="w-6 h-6 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+        </a>
+
+        <style>
+            .meeting-modal {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(5px);
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s ease-out;
+            }
+
+            .meeting-modal[style*="display: block"] {
+                opacity: 1;
+            }
+
+            .modal-content {
+                background: white;
+                max-width: 500px;
+                margin: 2rem auto;
+                border-radius: 1rem;
+                padding: 2rem;
+                position: relative;
+                transform: translateY(20px);
+                transition: transform 0.3s ease-out;
+            }
+
+            .meeting-modal[style*="display: block"] .modal-content {
+                transform: translateY(0);
+            }
+
+            .modal-header {
+                text-align: center;
+                margin-bottom: 2rem;
+                padding-bottom: 1.5rem;
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            .header-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .icon-container {
+                background: linear-gradient(135deg, #000 0%, #333 100%);
+                width: 64px;
+                height: 64px;
+                border-radius: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 1rem;
+                transform: rotate(-5deg);
+                transition: transform 0.3s ease;
+            }
+
+            .icon-container:hover {
+                transform: rotate(0deg) scale(1.05);
+            }
+
+            .analytics-icon {
+                width: 32px;
+                height: 32px;
+                color: white;
+            }
+
+            .modal-header h2 {
+                font-size: 1.75rem;
+                font-weight: 700;
+                color: #1a1a1a;
+                margin-bottom: 0.5rem;
+                background: linear-gradient(135deg, #000 0%, #333 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                line-height: 1.2;
+            }
+
+            .header-description {
+                color: #666;
+                font-size: 1rem;
+                max-width: 80%;
+                margin: 0 auto;
+                line-height: 1.5;
+            }
+
+            .stats-container {
+                display: flex;
+                justify-content: center;
+                gap: 2rem;
+                margin: 1.5rem 0;
+                padding: 1rem;
+                background: #f8f8f8;
+                border-radius: 12px;
+            }
+
+            .stat-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 0.25rem;
+            }
+
+            .stat-number {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #000;
+            }
+
+            .stat-label {
+                font-size: 0.875rem;
+                color: #666;
+            }
+
+            .contact-buttons {
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                margin: 1.5rem 0;
+            }
+
+            .contact-btn {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.75rem 1.5rem;
+                border-radius: 0.75rem;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .contact-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.1);
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .contact-btn:hover::before {
+                transform: translateX(0);
+            }
+
+            .whatsapp-btn {
+                background: #25D366;
+                color: white;
+                box-shadow: 0 2px 8px rgba(37, 211, 102, 0.2);
+            }
+
+            .whatsapp-btn:hover {
+                background: #22c35e;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+            }
+
+            .email-btn {
+                background: #000;
+                color: white;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .email-btn:hover {
+                background: #333;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            }
+
+            .form-group {
+                display: grid;
+                gap: 0.5rem;
+            }
+
+            .form-group label {
+                font-size: 0.9rem;
+                font-weight: 500;
+                color: #4a4a4a;
+            }
+
+            .form-group input,
+            .form-group textarea {
+                padding: 0.75rem;
+                border: 1px solid #e2e8f0;
+                border-radius: 0.5rem;
+                transition: all 0.2s;
+            }
+
+            .form-group input:focus,
+            .form-group textarea:focus {
+                border-color: #000;
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+            }
+
+            .form-info {
+                background: #f8fafc;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                margin: 1rem 0;
+            }
+
+            .form-info ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .form-info li {
+                color: #4a4a4a;
+                font-size: 0.9rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .submit-btn {
+                background: #000;
+                color: white;
+                padding: 0.75rem 1.5rem;
+                border-radius: 0.5rem;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                transition: all 0.2s;
+                width: 100%;
+            }
+
+            .submit-btn:hover {
+                background: #333;
+                transform: translateY(-1px);
+            }
+
+            .close-btn {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                color: #666;
+                cursor: pointer;
+                padding: 0.5rem;
+                line-height: 1;
+                transition: all 0.2s;
+            }
+
+            .close-btn:hover {
+                color: #000;
+            }
+
+            .book-meeting-btn {
+                position: fixed;
+                bottom: 2rem;
+                right: 2rem;
+                background: #000;
+                color: white;
+                padding: 1rem 2rem;
+                border-radius: 0.75rem;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                transition: all 0.3s;
+                z-index: 50;
+            }
+
+            .book-meeting-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
+
+            .btn-content {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .btn-title {
+                font-weight: 500;
+                font-size: 0.9rem;
+            }
+
+            @media (max-width: 640px) {
+                .modal-header h2 {
+                    font-size: 1.5rem;
+                }
+
+                .header-description {
+                    font-size: 0.9rem;
+                    max-width: 95%;
+                }
+
+                .stats-container {
+                    gap: 1rem;
+                    padding: 0.75rem;
+                }
+
+                .stat-number {
+                    font-size: 1.25rem;
+                }
+
+                .stat-label {
+                    font-size: 0.75rem;
+                }
+
+                .contact-buttons {
+                    flex-direction: column;
+                }
+
+                .contact-btn {
+                    width: 100%;
+                    justify-content: center;
+                }
+            }
+        </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const modal = document.getElementById('meetingModal');
+                const modalContent = modal.querySelector('.modal-content');
+                const openButtons = document.querySelectorAll('[href="#"]');
+                const closeButton = document.querySelector('.close-btn');
+                
+                openButtons.forEach(button => {
+                    button.addEventListener('click', openModal);
+                });
+                
+                closeButton.addEventListener('click', closeModal);
+                
+                function openModal(e) {
+                    e.preventDefault();
+                    modal.style.display = 'block';
+                    void modal.offsetWidth;
+                    document.body.style.overflow = 'hidden';
+                }
+                
+                function closeModal() {
+                    modal.style.opacity = '0';
+                    modalContent.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        modal.style.opacity = '1';
+                        modalContent.style.transform = '';
+                        document.body.style.overflow = 'auto';
+                    }, 300);
+                }
+                
+                modal.addEventListener('click', function(event) {
+                    if (event.target === modal) {
+                        closeModal();
+                    }
+                });
+                
+                const form = document.getElementById('meetingForm');
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    closeModal();
+                    setTimeout(() => {
+                        alert('Müraciətiniz qəbul edildi. Tezliklə sizinlə əlaqə saxlanılacaq.');
+                    }, 300);
+                });
+                
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && modal.style.display === 'block') {
+                        closeModal();
+                    }
+                });
+
+                // Smooth scroll to course sections
+                document.querySelectorAll('a[href^="/courses#"]').forEach(anchor => {
+                    anchor.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const sectionId = this.getAttribute('href').split('#')[1];
+                        const section = document.getElementById(sectionId);
+                        if (section) {
+                            window.scrollTo({
+                                top: section.offsetTop - 100, // Adjust for header height
+                                behavior: 'smooth'
+                            });
+                        } else {
+                            // If we're not on the courses page, navigate to it with the hash
+                            window.location.href = this.href;
+                        }
+                    });
+                });
+            });
+        </script>
+        {% block extra_js %}{% endblock %}
     </div>
-
-    <!-- Book Meeting Button -->
-    <a href="#" onclick="openMeetingModal()" class="book-meeting-btn">
-        <div class="btn-content">
-            <span class="btn-title">Görüş Təyin Et</span>
-            <span class="btn-subtitle">Pulsuz Konsultasiya</span>
-        </div>
-        <svg class="w-6 h-6 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-    </a>
-
-    <!-- Theme Toggle Button -->
-    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
-        <svg id="sun-icon" class="w-6 h-6" style="display: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-        <svg id="moon-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-        </svg>
-    </button>
-
-    <!-- Scripts -->
-    {% block extra_js %}{% endblock %}
 </body>
 </html>
